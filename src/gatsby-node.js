@@ -34,15 +34,13 @@ exports.sourceNodes = async (
 
   try {
     const sc = new Simplecast({ token, podcastId });
-    const [episodes, podcasts] = await Promise.all([sc.getEpisodes(fetchLimit), sc.getPodcasts(fetchLimit)]);
+    const [episodes, podcast] = await Promise.all([sc.getEpisodes(fetchLimit), sc.getPodcasts(fetchLimit)]);
 
     episodes
       .map(episode => PodcastEpisodeNode(episode))
       .forEach(node => createNode(node));
 
-    podcasts
-      .map(podcast => PodcastNode(podcast))
-      .forEach(node => createNode(node));
+    createNode(PodcastNode(podcast));
 
     setPluginStatus({ lastFetched: Date.now() });
   } catch (err) {

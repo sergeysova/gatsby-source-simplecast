@@ -62,13 +62,33 @@ class Simplecast {
       .catch(console.error);
   };
 
-  getPodcasts = (limit = 10) => {
-    return this.request(`podcasts?limit=${limit}`)
+  getPodcast = () => {
+    return this.request(`podcasts/${this.podcastId}`)
       .then(res => res.json())
-      .then(info => info.collection)
+      .then(info => ({
+        copyright: info.copyright,
+        created_at: info.created_at,
+        description: info.description,
+        feed_url: info.feed_url,
+        id: info.id,
+        image_path: info.image_path,
+        image_url: info.image_url,
+        keywords: info.keywords.collection,
+        language: info.language,
+        logo_image_url: info.logo_image_url,
+        owner: info.owner,
+        published_at: info.published_at,
+        site: info.site,
+        subtitle: info.subtitle,
+        time_zone: info.time_zone,
+      }))
       .then(data => camelCaseKeys(data, { deep: true }))
       .catch(console.error);
   }
+
+  // getSeasons = (podcastId, limit = 10) => {
+  //   return this.request(`podcasts/${podcastId}`)
+  // }
 }
 
 module.exports = Simplecast;
