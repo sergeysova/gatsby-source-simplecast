@@ -61,6 +61,14 @@ class Simplecast {
       .then(data => camelCaseKeys(data, { deep: true }))
       .catch(console.error);
   };
+
+  getPodcasts = (limit = 10) => {
+    return this.request(`podcasts?limit=${limit}`)
+      .then(res => res.json())
+      .then(info => info.collection)
+      .then(data => camelCaseKeys(data, { deep: true }))
+      .catch(console.error);
+  }
 }
 
 module.exports = Simplecast;

@@ -10,6 +10,9 @@
     "prepare": "cross-env NODE_ENV=production yarn build",
     "test": "echo \"Error: no test specified\""
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "gatsby",
     "gatsby-plugin",

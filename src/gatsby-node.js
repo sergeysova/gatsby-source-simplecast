@@ -1,9 +1,9 @@
 const createNodeHelpers = require('gatsby-node-helpers').default;
 const Simplecast = require('./lib/Simplecast');
 const { createNodeFactory } = createNodeHelpers({ typePrefix: `Simplecast` });
-const PodcastEpisodeNode = createNodeFactory('PodcastEpisode', node => {
-  return node;
-});
+
+const PodcastEpisodeNode = createNodeFactory('PodcastEpisode', node => node);
+const PodcastNode = createNodeFactory('Podcast', node => node)
 
 const PLUGIN_NAME = '@sergeysova/gatsby-source-simplecast';
 const DEFAULTS = {
@@ -31,10 +31,14 @@ exports.sourceNodes = async (
 
   try {
     const sc = new Simplecast({ token, podcastId });
-    const episodes = await sc.getEpisodes(fetchLimit);
+    const [episodes, podcasts] = await Promise.all([sc.getEpisodes(fetchLimit), sc.getPodcasts(fetchLimit)]);
 
     episodes
       .map(episode => PodcastEpisodeNode(episode))
+      .forEach(node => createNode(node));
+
+    podcasts
+      .map(podcast => PodcastNode(podcast))
       .forEach(node => createNode(node));
 
     setPluginStatus({ lastFetched: Date.now() });
