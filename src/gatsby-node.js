@@ -34,7 +34,7 @@ exports.sourceNodes = async (
 
   try {
     const sc = new Simplecast({ token, podcastId });
-    const [episodes, podcast] = await Promise.all([sc.getEpisodes(fetchLimit), sc.getPodcasts(fetchLimit)]);
+    const [episodes, podcast] = await Promise.all([sc.getEpisodes(fetchLimit), sc.getPodcast()]);
 
     episodes
       .map(episode => PodcastEpisodeNode(episode))
