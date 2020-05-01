@@ -1,5 +1,5 @@
 {
-  "name": "gatsby-source-simplecast",
+  "name": "@sergeysova/gatsby-source-simplecast",
   "version": "2.2.0",
   "description": "Gatsby plugin to load podcast episodes from Simplecast.",
   "main": "index.js",
@@ -17,15 +17,15 @@
     "simplecast"
   ],
   "author": "Chance Strickland <hi@chancedigital.io>",
-  "homepage": "https://github.com/chancestrickland/gatsby-source-simplecast#readme",
+  "homepage": "https://github.com/sergeysova/gatsby-source-simplecast#readme",
   "license": "MIT",
   "private": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/chancestrickland/gatsby-source-simplecast"
+    "url": "https://github.com/sergeysova/gatsby-source-simplecast"
   },
   "bugs": {
-    "url": "https://github.com/chancestrickland/gatsby-source-simplecast/issues"
+    "url": "https://github.com/sergeysova/gatsby-source-simplecast/issues"
   },
   "peerDependencies": {
     "gatsby": "^2.0.0"

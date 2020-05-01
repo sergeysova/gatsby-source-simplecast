@@ -5,7 +5,7 @@ const PodcastEpisodeNode = createNodeFactory('PodcastEpisode', node => {
   return node;
 });
 
-const PLUGIN_NAME = 'gatsby-source-simplecast';
+const PLUGIN_NAME = '@sergeysova/gatsby-source-simplecast';
 const DEFAULTS = {
   fetchLimit: 99
 };
