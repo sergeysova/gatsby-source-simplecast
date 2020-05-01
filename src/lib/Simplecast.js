@@ -81,14 +81,21 @@ class Simplecast {
         site: info.site,
         subtitle: info.subtitle,
         time_zone: info.time_zone,
+        title: info.title,
       }))
       .then(data => camelCaseKeys(data, { deep: true }))
       .catch(console.error);
   }
 
-  // getSeasons = (podcastId, limit = 10) => {
-  //   return this.request(`podcasts/${podcastId}`)
-  // }
+  getSeasons = (limit = 10) => {
+    return this.request(`podcasts/${this.podcastId}/seasons?limit=${limit}`)
+      .then(res => res.json())
+      .then(info => info.collection)
+      .then((list) => list.map(({ href, number }) => ({
+        id: href.split('/').pop(),
+        number,
+      })))
+  }
 }
 
 module.exports = Simplecast;

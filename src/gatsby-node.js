@@ -4,9 +4,9 @@ const Simplecast = require('./lib/Simplecast');
 
 const { createNodeFactory } = createNodeHelpers({ typePrefix: `Simplecast` });
 
-
-const PodcastEpisodeNode = createNodeFactory('PodcastEpisode', node => node);
 const PodcastNode = createNodeFactory('Podcast', node => node)
+const PodcastSeasonNode = createNodeFactory('Season', node => node);
+const PodcastEpisodeNode = createNodeFactory('PodcastEpisode', node => node);
 
 const PLUGIN_NAME = '@sergeysova/gatsby-source-simplecast';
 const DEFAULTS = {
@@ -14,7 +14,7 @@ const DEFAULTS = {
 };
 
 exports.sourceNodes = async (
-  { actions: { createNode, setPluginStatus } },
+  { actions: { createNode, setPluginStatus }, createContentDigest },
   { token, podcastId, fetchLimit = DEFAULTS.fetchLimit }
 ) => {
   const errorAboutGatsbyPlugins =
@@ -34,13 +34,18 @@ exports.sourceNodes = async (
 
   try {
     const sc = new Simplecast({ token, podcastId });
-    const [episodes, podcast] = await Promise.all([sc.getEpisodes(fetchLimit), sc.getPodcast()]);
+    const [episodes, podcast, seasons] = await Promise.all([sc.getEpisodes(fetchLimit), sc.getPodcast(), sc.getSeasons(fetchLimit)]);
+
+    createNode(PodcastNode(podcast))
 
     episodes
       .map(episode => PodcastEpisodeNode(episode))
       .forEach(node => createNode(node));
 
-    createNode(PodcastNode(podcast));
+    seasons
+      .map(season => PodcastSeasonNode(season))
+      .forEach(node => createNode(node));
+
 
     setPluginStatus({ lastFetched: Date.now() });
   } catch (err) {
@@ -73,7 +78,7 @@ exports.onCreateNode = async ({
   }
 }
 
-exports.createSchemaCustomization = ({ actions }) => {
+exports.createSchemaCustomization = ({ actions, schema }) => {
   actions.createTypes(`
     type SimplecastPodcastEpisode implements Node {
       image: File @link(from: "image___NODE")
@@ -83,4 +88,21 @@ exports.createSchemaCustomization = ({ actions }) => {
       image: File @link(from: "image___NODE")
     }
   `)
+
+  // actions.createTypes([
+  //   "type SimplecastPodcastSeason implements Node { podcast: SimplecastPodcast }",
+  //   schema.buildObjectType({
+  //     name: "SimplecastPodcastSeason",
+  //     fields: {
+  //       podcast: {
+  //         type: "SimplecastPodcast",
+  //         resolve(source, args, context, info) {
+  //           return context.nodeModel
+  //             .getAllNodes({ type: "SimplecastPodcast" })
+  //             .find(podcast => Boolean(podcast))
+  //         }
+  //       }
+  //     }
+  //   })
+  // ])
 }
