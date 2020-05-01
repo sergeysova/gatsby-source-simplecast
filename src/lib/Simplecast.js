@@ -33,16 +33,6 @@ class Simplecast {
     });
   };
 
-  getEpisode = episodeId => {
-    if (!episodeId) {
-      throw Error('No episode ID provided.');
-    }
-    return this.request(`episodes/${this.podcastId}/episodes`)
-      .then(res => res.json())
-      .then(data => camelCaseKeys(data, { deep: true }))
-      .catch(console.error);
-  };
-
   getShowInfo = () => {
     return this.request(`podcasts/${this.podcastId}`)
       .then(res => res.json())
@@ -58,6 +48,10 @@ class Simplecast {
     )
       .then(res => res.json())
       .then(info => info.collection)
+      .then(list => list.map(({ season, ...rest }) => ({
+        ...rest,
+        seasonNumber: season.number,
+      })))
       .then(data => camelCaseKeys(data, { deep: true }))
       .catch(console.error);
   };
@@ -94,6 +88,7 @@ class Simplecast {
       .then((list) => list.map(({ href, number }) => ({
         id: href.split('/').pop(),
         number,
+        podcastId: this.podcastId,
       })))
   }
 }

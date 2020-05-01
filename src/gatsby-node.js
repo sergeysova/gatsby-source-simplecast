@@ -5,8 +5,8 @@ const Simplecast = require('./lib/Simplecast');
 const { createNodeFactory } = createNodeHelpers({ typePrefix: `Simplecast` });
 
 const PodcastNode = createNodeFactory('Podcast', node => node)
-const PodcastSeasonNode = createNodeFactory('Season', node => node);
-const PodcastEpisodeNode = createNodeFactory('PodcastEpisode', node => node);
+const SeasonNode = createNodeFactory('Season', node => node);
+const EpisodeNode = createNodeFactory('Episode', node => node);
 
 const PLUGIN_NAME = '@sergeysova/gatsby-source-simplecast';
 const DEFAULTS = {
@@ -39,11 +39,11 @@ exports.sourceNodes = async (
     createNode(PodcastNode(podcast))
 
     episodes
-      .map(episode => PodcastEpisodeNode(episode))
+      .map(episode => EpisodeNode(episode))
       .forEach(node => createNode(node));
 
     seasons
-      .map(season => PodcastSeasonNode(season))
+      .map(season => SeasonNode(season))
       .forEach(node => createNode(node));
 
 
@@ -80,29 +80,34 @@ exports.onCreateNode = async ({
 
 exports.createSchemaCustomization = ({ actions, schema }) => {
   actions.createTypes(`
-    type SimplecastPodcastEpisode implements Node {
+    type SimplecastEpisode implements Node {
       image: File @link(from: "image___NODE")
+      season: SimplecastSeason @link(by: "number", from: "seasonNumber")
     }
 
     type SimplecastPodcast implements Node {
       image: File @link(from: "image___NODE")
+      seasons: [SimplecastSeason] @link(by: "podcastId", from: "simplecastId")
     }
   `)
 
-  // actions.createTypes([
-  //   "type SimplecastPodcastSeason implements Node { podcast: SimplecastPodcast }",
-  //   schema.buildObjectType({
-  //     name: "SimplecastPodcastSeason",
-  //     fields: {
-  //       podcast: {
-  //         type: "SimplecastPodcast",
-  //         resolve(source, args, context, info) {
-  //           return context.nodeModel
-  //             .getAllNodes({ type: "SimplecastPodcast" })
-  //             .find(podcast => Boolean(podcast))
-  //         }
-  //       }
-  //     }
-  //   })
-  // ])
+  actions.createTypes([
+    `type SimplecastSeason implements Node {
+        podcast: SimplecastPodcast
+        episodes: [SimplecastEpisode] @link(by: "seasonNumber", from: "number")
+      }`,
+    schema.buildObjectType({
+      name: "SimplecastSeason",
+      fields: {
+        podcast: {
+          type: "SimplecastPodcast",
+          resolve(source, args, context, info) {
+            return context.nodeModel
+              .getAllNodes({ type: "SimplecastPodcast" })
+              .find(podcast => Boolean(podcast))
+          }
+        }
+      }
+    })
+  ])
 }
