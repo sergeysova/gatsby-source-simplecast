@@ -17,13 +17,13 @@ A Gatsby plugin to load podcast episodes from the [Simplecast API](https://help.
 ## Installation
 
 ```bash
-$ npm i gatsby-source-simplecast
+$ npm i @sergeysova/gatsby-source-simplecast
 ```
 
 OR
 
 ```bash
-$ yarn add gatsby-source-simplecast
+$ yarn add @sergeysova/gatsby-source-simplecast
 ```
 
 ## Usage
@@ -34,7 +34,7 @@ In your `gatsby-config.js` file, load in the plugin along with the parameters of
 module.exports = {
   plugins: [
     {
-      resolve: 'gatsby-source-simplecast',
+      resolve: '@sergeysova/gatsby-source-simplecast',
       options: {
         token: 'abcdefghijklmnopqrstuvwxyz1234567890',
         podcastId: 'abc123de-456f-gh78-90ij-klmn1234opqr',
@@ -49,12 +49,13 @@ In your page, construct a query to get the data you need from the API.
 ```js
 import React from 'react';
 import { graphql } from 'gatsby';
+import Img from 'gatsby-image'
 import Layout from 'components/Layout';
 
 // Data from the pageQuery below is available as props to your page component!
 const PodcastPage = ({
   data: {
-    allSimplecastPodcastEpisode: { edges: episodes },
+    allSimplecastEpisode: { edges: episodes },
   },
 }) => {
   return (
@@ -67,6 +68,7 @@ const PodcastPage = ({
               <h2>
                 Episode {node.number}: {node.title}
               </h2>
+              <Img fixed={node.image.childImageSharp.fixed} />
               <p>Published {node.publishedAt}</p>
               <hr />
               <p>{node.description}</p>
@@ -82,7 +84,7 @@ const PodcastPage = ({
 
 export const pageQuery = graphql`
   query PodcastPageQuery {
-    allSimplecastPodcastEpisode {
+    allSimplecastEpisode {
       edges {
         node {
           id
@@ -92,6 +94,13 @@ export const pageQuery = graphql`
           publishedAt(formatString: "MMMM D, Y")
           title
           description
+          image {
+            childImageSharp {
+              fixed(width: 300) {
+                ...GatsbyImageSharpFixed
+              }
+            }
+          }
         }
       }
     }
