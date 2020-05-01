@@ -31,7 +31,8 @@
     "url": "https://github.com/sergeysova/gatsby-source-simplecast/issues"
   },
   "peerDependencies": {
-    "gatsby": "^2.0.0"
+    "gatsby": "^2.0.0",
+    "gatsby-source-filesystem": "^2.3.0"
   },
   "dependencies": {
     "@babel/runtime": "^7.7.7",
@@ -51,6 +52,7 @@
     "eslint-plugin-jest": "^23.2.0",
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-prettier": "^3.1.2",
+    "gatsby-source-filesystem": "^2.3.0",
     "jest": "^24.9.0",
     "jest-fetch-mock": "^3.0.1",
     "prettier": "^1.19.1"

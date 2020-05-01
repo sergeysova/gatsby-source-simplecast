@@ -1,6 +1,9 @@
 const createNodeHelpers = require('gatsby-node-helpers').default;
+const { createRemoteFileNode } = require('gatsby-source-filesystem')
 const Simplecast = require('./lib/Simplecast');
+
 const { createNodeFactory } = createNodeHelpers({ typePrefix: `Simplecast` });
+
 
 const PodcastEpisodeNode = createNodeFactory('PodcastEpisode', node => node);
 const PodcastNode = createNodeFactory('Podcast', node => node)
@@ -46,3 +49,40 @@ exports.sourceNodes = async (
     console.error('FAIL:', err);
   }
 };
+
+const nodeWithImage = ['SimplecastPodcastEpisode', 'SimplecastPodcast']
+
+exports.onCreateNode = async ({
+  node,
+  actions,
+  store,
+  cache,
+  createNodeId,
+}) => {
+  if (nodeWithImage.includes(node.internal.type) && node.imageUrl) {
+    const fileNode = await createRemoteFileNode({
+      url: node.imageUrl,
+      parentNodeId: node.id,
+      createNode: actions.createNode,
+      createNodeId,
+      cache,
+      store,
+    })
+
+    if (fileNode) {
+      node.image___NODE = fileNode.id
+    }
+  }
+}
+
+exports.createSchemaCustomization = ({ actions }) => {
+  actions.createTypes(`
+    type SimplecastPodcastEpisode implements Node {
+      image: File @link(from: "image___NODE")
+    }
+
+    type SimplecastPodcast implements Node {
+      image: File @link(from: "image___NODE")
+    }
+  `)
+}
