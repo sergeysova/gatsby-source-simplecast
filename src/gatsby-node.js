@@ -40,15 +40,19 @@ exports.sourceNodes = async (
       sc.getSeasons(fetchLimit),
     ]);
 
-    createNode(PodcastNode(podcast));
+    await createNode(PodcastNode(podcast));
 
-    episodes
-      .map((episode) => EpisodeNode(episode))
-      .forEach((node) => createNode(node));
+    await Promise.all(
+      episodes
+        .map((episode) => EpisodeNode(episode))
+        .map((node) => createNode(node))
+    );
 
-    seasons
-      .map((season) => SeasonNode(season))
-      .forEach((node) => createNode(node));
+    await Promise.all(
+      seasons
+        .map((season) => SeasonNode(season))
+        .map((node) => createNode(node))
+    );
 
     setPluginStatus({ lastFetched: Date.now() });
   } catch (err) {
@@ -69,7 +73,6 @@ exports.onCreateNode = async ({
   cache,
   createNodeId,
 }) => {
-  console.log(node.internal.type, node.imageUrl, node);
   if (nodeWithImage.includes(node.internal.type) && node.imageUrl) {
     const fileNode = await createRemoteFileNode({
       url: node.imageUrl,
