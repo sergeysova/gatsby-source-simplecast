@@ -16,6 +16,8 @@ A Gatsby plugin to load podcast episodes from the [Simplecast API](https://help.
 
 ## Installation
 
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](http://prettier.io)
+
 ```bash
 $ npm i @sergeysova/gatsby-source-simplecast
 ```

@@ -35,8 +35,8 @@ class Simplecast {
 
   getShowInfo = () => {
     return this.request(`podcasts/${this.podcastId}`)
-      .then(res => res.json())
-      .then(data => camelCaseKeys(data, { deep: true }))
+      .then((res) => res.json())
+      .then((data) => camelCaseKeys(data, { deep: true }))
       .catch(console.error);
   };
 
@@ -46,20 +46,22 @@ class Simplecast {
         typeof limit === 'number' ? limit : 10
       }`
     )
-      .then(res => res.json())
-      .then(info => info.collection)
-      .then(list => list.map(({ season, ...rest }) => ({
-        ...rest,
-        seasonNumber: season.number,
-      })))
-      .then(data => camelCaseKeys(data, { deep: true }))
+      .then((res) => res.json())
+      .then((info) => info.collection)
+      .then((list) =>
+        list.map(({ season, ...rest }) => ({
+          ...rest,
+          seasonNumber: season.number,
+        }))
+      )
+      .then((data) => camelCaseKeys(data, { deep: true }))
       .catch(console.error);
   };
 
   getPodcast = () => {
     return this.request(`podcasts/${this.podcastId}`)
-      .then(res => res.json())
-      .then(info => ({
+      .then((res) => res.json())
+      .then((info) => ({
         copyright: info.copyright,
         created_at: info.created_at,
         description: info.description,
@@ -77,20 +79,22 @@ class Simplecast {
         time_zone: info.time_zone,
         title: info.title,
       }))
-      .then(data => camelCaseKeys(data, { deep: true }))
+      .then((data) => camelCaseKeys(data, { deep: true }))
       .catch(console.error);
-  }
+  };
 
   getSeasons = (limit = 10) => {
     return this.request(`podcasts/${this.podcastId}/seasons?limit=${limit}`)
-      .then(res => res.json())
-      .then(info => info.collection)
-      .then((list) => list.map(({ href, number }) => ({
-        id: href.split('/').pop(),
-        number,
-        podcastId: this.podcastId,
-      })))
-  }
+      .then((res) => res.json())
+      .then((info) => info.collection)
+      .then((list) =>
+        list.map(({ href, number }) => ({
+          id: href.split('/').pop(),
+          number,
+          podcastId: this.podcastId,
+        }))
+      );
+  };
 }
 
-module.exports = Simplecast;
+module.exports = { Simplecast };

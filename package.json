@@ -1,6 +1,6 @@
 {
   "name": "@sergeysova/gatsby-source-simplecast",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Gatsby plugin to load podcast episodes from Simplecast.",
   "main": "index.js",
   "scripts": {
@@ -8,17 +8,13 @@
     "watch": "babel -w src --out-dir . --ignore **/__tests__",
     "dev": "cross-env NODE_ENV=development yarn watch",
     "prepare": "cross-env NODE_ENV=production yarn build",
-    "test": "echo \"Error: no test specified\""
+    "test": "echo \"Error: no test specified\"",
+    "format": "prettier --write \"./src/**/**.{ts,tsx,js,jsx,json}\""
   },
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [
-    "gatsby",
-    "gatsby-plugin",
-    "gatsby-source",
-    "simplecast"
-  ],
+  "keywords": ["gatsby", "gatsby-plugin", "gatsby-source", "simplecast"],
   "author": "Chance Strickland <hi@chancedigital.io>",
   "homepage": "https://github.com/sergeysova/gatsby-source-simplecast#readme",
   "license": "MIT",
@@ -53,12 +49,21 @@
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-prettier": "^3.1.2",
     "gatsby-source-filesystem": "^2.3.0",
+    "husky": "^3.1.0",
     "jest": "^24.9.0",
     "jest-fetch-mock": "^3.0.1",
-    "prettier": "^1.19.1"
+    "lint-staged": "^9.5.0",
+    "prettier": "^2.0.5"
   },
   "prettier": {
     "singleQuote": true,
     "trailingComma": "es5"
+  },
+  "config": {
+    "importSort": {
+      ".js, .jsx, .mjs, .cjs": {
+        "style": "sova"
+      }
+    }
   }
 }

@@ -1,16 +1,16 @@
-const createNodeHelpers = require('gatsby-node-helpers').default;
-const { createRemoteFileNode } = require('gatsby-source-filesystem')
-const Simplecast = require('./lib/Simplecast');
+const { default: createNodeHelpers } = require('gatsby-node-helpers');
+const { createRemoteFileNode } = require('gatsby-source-filesystem');
+const { Simplecast } = require('./lib/Simplecast');
 
 const { createNodeFactory } = createNodeHelpers({ typePrefix: `Simplecast` });
 
-const PodcastNode = createNodeFactory('Podcast', node => node)
-const SeasonNode = createNodeFactory('Season', node => node);
-const EpisodeNode = createNodeFactory('Episode', node => node);
+const PodcastNode = createNodeFactory('Podcast', (node) => node);
+const SeasonNode = createNodeFactory('Season', (node) => node);
+const EpisodeNode = createNodeFactory('Episode', (node) => node);
 
 const PLUGIN_NAME = '@sergeysova/gatsby-source-simplecast';
 const DEFAULTS = {
-  fetchLimit: 99
+  fetchLimit: 99,
 };
 
 exports.sourceNodes = async (
@@ -34,18 +34,21 @@ exports.sourceNodes = async (
 
   try {
     const sc = new Simplecast({ token, podcastId });
-    const [episodes, podcast, seasons] = await Promise.all([sc.getEpisodes(fetchLimit), sc.getPodcast(), sc.getSeasons(fetchLimit)]);
+    const [episodes, podcast, seasons] = await Promise.all([
+      sc.getEpisodes(fetchLimit),
+      sc.getPodcast(),
+      sc.getSeasons(fetchLimit),
+    ]);
 
-    createNode(PodcastNode(podcast))
+    createNode(PodcastNode(podcast));
 
     episodes
-      .map(episode => EpisodeNode(episode))
-      .forEach(node => createNode(node));
+      .map((episode) => EpisodeNode(episode))
+      .forEach((node) => createNode(node));
 
     seasons
-      .map(season => SeasonNode(season))
-      .forEach(node => createNode(node));
-
+      .map((season) => SeasonNode(season))
+      .forEach((node) => createNode(node));
 
     setPluginStatus({ lastFetched: Date.now() });
   } catch (err) {
@@ -53,7 +56,11 @@ exports.sourceNodes = async (
   }
 };
 
-const nodeWithImage = ['SimplecastPodcastEpisode', 'SimplecastPodcast']
+const nodeWithImage = [
+  'SimplecastEpisode',
+  'SimplecastSeason',
+  'SimplecastPodcast',
+];
 
 exports.onCreateNode = async ({
   node,
@@ -62,6 +69,7 @@ exports.onCreateNode = async ({
   cache,
   createNodeId,
 }) => {
+  console.log(node.internal.type, node.imageUrl, node);
   if (nodeWithImage.includes(node.internal.type) && node.imageUrl) {
     const fileNode = await createRemoteFileNode({
       url: node.imageUrl,
@@ -70,13 +78,13 @@ exports.onCreateNode = async ({
       createNodeId,
       cache,
       store,
-    })
+    });
 
     if (fileNode) {
-      node.image___NODE = fileNode.id
+      node.image___NODE = fileNode.id;
     }
   }
-}
+};
 
 exports.createSchemaCustomization = ({ actions, schema }) => {
   actions.createTypes(`
@@ -89,7 +97,7 @@ exports.createSchemaCustomization = ({ actions, schema }) => {
       image: File @link(from: "image___NODE")
       seasons: [SimplecastSeason] @link(by: "podcastId", from: "simplecastId")
     }
-  `)
+  `);
 
   actions.createTypes([
     `type SimplecastSeason implements Node {
@@ -97,17 +105,17 @@ exports.createSchemaCustomization = ({ actions, schema }) => {
         episodes: [SimplecastEpisode] @link(by: "seasonNumber", from: "number")
       }`,
     schema.buildObjectType({
-      name: "SimplecastSeason",
+      name: 'SimplecastSeason',
       fields: {
         podcast: {
-          type: "SimplecastPodcast",
+          type: 'SimplecastPodcast',
           resolve(source, args, context, info) {
             return context.nodeModel
-              .getAllNodes({ type: "SimplecastPodcast" })
-              .find(podcast => Boolean(podcast))
-          }
-        }
-      }
-    })
-  ])
-}
+              .getAllNodes({ type: 'SimplecastPodcast' })
+              .find((podcast) => Boolean(podcast));
+          },
+        },
+      },
+    }),
+  ]);
+};
